@@ -2,6 +2,7 @@ package main
 
 import (
 	"database/sql"
+	"fmt"
 	"log"
 
 	_ "github.com/go-sql-driver/mysql"
@@ -18,6 +19,23 @@ func main() {
 	}
 	defer db.Close()
 
+	//新增資料
+
+	stmt, err := db.Prepare("insert into tb (name,age) values (?,?)")
+	if err != nil {
+		log.Fatal(err)
+	}
+	res, err := stmt.Exec("Tony3", 20)
+	if err != nil {
+		log.Fatal(err)
+	}
+	addKey, err := res.LastInsertId()
+	if err != nil {
+		log.Fatal(err)
+	}
+	fmt.Printf("新增了 %d\n", addKey)
+
+	//查詢
 	// rows, err := db.Query("select id, name, age from tb where name = ?", "Cain")
 	rows, err := db.Query("select id, name, age from tb")
 	if err != nil {
@@ -37,7 +55,7 @@ func main() {
 		log.Fatal(err)
 	}
 
-	//單筆資料
+	//查詢單筆資料
 	// var name string
 	// db.QueryRow("select name from tb where id = 1").Scan(&name)
 	// fmt.Println(name)
